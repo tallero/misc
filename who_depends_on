@@ -1,0 +1,48 @@
+#!/bin/env python3
+
+import sys
+from subprocess import check_output as sh
+from re import sub
+from string import ascii_letters as letters
+
+def who_depends_on(module):
+    """Returns module depending on input module
+       
+       Data is fetched through 'modprobe --show-depends', which (apparently)
+       does not always include all relevant results.
+        Args:
+            module: linux module name
+        Returns:
+            results (list): modules that depends on 'module' arg
+    """
+    results = []
+    loaded_modules = sh(['lsmod']).decode('utf-8')
+    loaded_modules = loaded_modules.split('\n')
+    loaded_modules = loaded_modules[1:-1]
+    loaded_modules = [m.split(' ')[0] for m in loaded_modules]
+
+    for m in loaded_modules:
+        dependencies_strings = sh(['modprobe', m, '--show-depends']).decode('utf-8')
+        dependencies_strings_parsed_in_lines = dependencies_strings.split('\n')
+
+        insmod_dependencies_module_files = [m.split('/')[-1] for m in dependencies_strings_parsed_in_lines if not m.startswith("install")]
+        insmod_modules = set([m.split('.')[0] for m in insmod_dependencies_module_files])
+
+        install_dependencies_strings = [m.split(' ')[1:] for m in dependencies_strings_parsed_in_lines if m.startswith("install")]
+        install_modules = set()
+        #print("install_dependencies_strings", install_dependencies_strings)
+        for string in install_dependencies_strings:
+            for n in string:
+                for l in letters:
+                    if n.startswith(l):
+                        install_modules.add(n) 
+
+        modules = install_modules.union(insmod_modules) 
+        
+        module = sub('_', '-', module)
+        if module in modules:
+            results.append(m)
+    return results
+
+for mod in who_depends_on(sys.argv[1]):
+    print(mod)
