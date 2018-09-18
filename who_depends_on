@@ -1,3 +1,5 @@
+#!/bin/env python3
+
 #    who_depends_on
 #
 #    ----------------------------------------------------------------------
@@ -20,16 +22,13 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-
-#!/bin/env python3
-
-import sys
+from sys import argv
 from subprocess import check_output as sh
 from re import sub
 from string import ascii_letters as letters
 
 def who_depends_on(module):
-    """Returns module depending on input module
+    """Returns linux kernel module depending on given input module
        
     Data is fetched through 'modprobe --show-depends', which (apparently)
     does not always include all relevant results.
@@ -68,5 +67,25 @@ def who_depends_on(module):
             results.append(m)
     return results
 
-for mod in who_depends_on(sys.argv[1]):
-    print(mod)
+help_text="""who_depends_on
+
+Returns linux kernel module depending on given input module
+
+Data is fetched through 'modprobe --show-depends', which (apparently)
+does not always include all relevant results.
+
+    SYNTAX:
+        who_depends_on module
+
+Copyright (C) 2018 Pellegrino Prevete.
+This is free software; see the source code for copying conditions.
+There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.
+"""
+
+    
+if len(argv) <= 1 or "--help" in argv:
+    print(help_text)
+else:
+    for mod in who_depends_on(argv[1]):
+        print(mod)

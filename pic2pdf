@@ -1,3 +1,5 @@
+#!/bin/env python3
+
 #    pic2pdf
 #
 #    ----------------------------------------------------------------------
@@ -20,8 +22,6 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-#!/bin/env python3
-
 from PIL import Image
 from os.path import realpath
 from os import getcwd
@@ -40,16 +40,22 @@ def img2pdf(imglist, output):
 
     image.save(output, "PDF" ,resolution=100.0, save_all=True, append_images=images)
 
-help_text = """Script using Python Image Library that put a list of pictures into one pdf file. \n
-            \n
-            SYNTAX: \n
-            \t    img2pdf pic1 pic2 ... picN file.pdf
-            """
+help_text = """pic2pdf
+
+Script using Python Image Library that put a list of pictures into one pdf file.
+
+    SYNTAX:
+        img2pdf pic1 pic2 ... picN file.pdf \n
+
+Copyright (C) 2018 Pellegrino Prevete.
+This is free software; see the source code for copying conditions.
+There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.
+"""
 
 if len(argv) == 1 or "--help" in argv:
     print(help_text)
 else:
     imglist = argv[1:-1]
     output = argv[-1]
-
-img2pdf(imglist, output)
+    img2pdf(imglist, output)
