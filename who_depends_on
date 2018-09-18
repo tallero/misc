@@ -1,3 +1,26 @@
+#    who_depends_on
+#
+#    ----------------------------------------------------------------------
+#    Copyright © 2018  Pellegrino Prevete
+#
+#    All rights reserved
+#    ----------------------------------------------------------------------
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+
 #!/bin/env python3
 
 import sys
@@ -8,12 +31,13 @@ from string import ascii_letters as letters
 def who_depends_on(module):
     """Returns module depending on input module
        
-       Data is fetched through 'modprobe --show-depends', which (apparently)
-       does not always include all relevant results.
-        Args:
-            module: linux module name
-        Returns:
-            results (list): modules that depends on 'module' arg
+    Data is fetched through 'modprobe --show-depends', which (apparently)
+    does not always include all relevant results.
+
+    Args:
+        module: linux module name
+    Returns:
+        results (list): modules that depends on 'module' arg
     """
     results = []
     loaded_modules = sh(['lsmod']).decode('utf-8')
