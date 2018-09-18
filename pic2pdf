@@ -1,0 +1,55 @@
+#    pic2pdf
+#
+#    ----------------------------------------------------------------------
+#    Copyright © 2018  Pellegrino Prevete
+#
+#    All rights reserved
+#    ----------------------------------------------------------------------
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+#!/bin/env python3
+
+from PIL import Image
+from os.path import realpath
+from os import getcwd
+from sys import argv
+
+def img2pdf(imglist, output):
+    """ Create pdf file from pictures
+
+    Args:
+        imglist (list): list of pictures path
+        output (str): name of the output pdf file
+    """
+    pathlist = [realpath(img) for img in imglist]
+    image = Image.open(pathlist[0])
+    images = [Image.open(path) for path in pathlist[1:]]
+
+    image.save(output, "PDF" ,resolution=100.0, save_all=True, append_images=images)
+
+help_text = """Script using Python Image Library that put a list of pictures into one pdf file. \n
+            \n
+            SYNTAX: \n
+            \t    img2pdf pic1 pic2 ... picN file.pdf
+            """
+
+if len(argv) == 1 or "--help" in argv:
+    print(help_text)
+else:
+    imglist = argv[1:-1]
+    output = argv[-1]
+
+img2pdf(imglist, output)
