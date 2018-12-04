@@ -33,12 +33,21 @@ name = 'certbot_extra_formats'
 def in_certroot(x): return "".join([certroot, x])
 
 def write_cert(app):
+    """Combine and write let's encrypt certificates compatible with given application.
+
+    Args:
+        app (str): application that rquests the certificate;
+    Returns:
+        True if the certificate has been written to disk, False otherwise.
+
+    """
     for domain in ls(certroot):
         priv = in_certroot('privkey.pem')
         cert = in_certroot('cert.pem')
         name = in_certroot(app + '.pem')
         command = "".join(['cat', ' ', cert, ' ', priv, ' > ', name])
-        sh([command], shell=True)
+        if sh([command], shell=True):
+            return True
 
 if __name__ == "__main__":
 
@@ -50,6 +59,6 @@ if __name__ == "__main__":
     group = ['lighttpd', 'ejabberd']
 
     if args.app in group:
-        write_cert(args.app)
-        if args.verbose:
+        written = write_cert(args.app)
+        if written and args.verbose:
             print("writing " + args.app + ".pem")
