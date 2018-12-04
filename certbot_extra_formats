@@ -51,8 +51,6 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         domains = []
     out = {}
     for domain in domains:
-        if verbose:
-            print(domain)
         priv = certroot + domain + '/privkey.pem'
         cert = certroot + domain + '/cert.pem'
         name = certroot + domain + '/' + app + '.pem'
