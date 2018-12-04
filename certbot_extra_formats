@@ -53,7 +53,9 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         cert = certroot + domain + '/cert.pem'
         name = certroot + domain + '/' + app + '.pem'
         command = "".join(['cat', ' ', cert, ' ', priv, ' > ', name])
-        if sh([command], shell=True):
+        out = sh([command], shell=True)
+        if out:
+            print(out)
             if verbose:
                 print("writing " + args.app + ".pem")
             return True
