@@ -59,7 +59,7 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         out = sh([command], shell=True)
         if out == b'':
             if verbose:
-                print("\twriting " + args.app + ".pem")
+                print("\twriting " + app + ".pem")
             return True
 
 if __name__ == "__main__":
