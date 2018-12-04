@@ -25,12 +25,10 @@
 
 from subprocess import check_output as sh
 from os import listdir as ls
+from os.path import join as pjoin
 from argparse import ArgumentParser
 
 name = 'certbot_extra_formats'
-
-group = ['lighttpd', 'ejabberd']
-
 
 def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
     """Combine and write let's encrypt certificates compatible with given application.
@@ -43,20 +41,30 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         True if the certificate has been written to certroot dir with 'app.pem' name, False otherwise.
 
     """
+    certname = pjoin(certroot, domain, app + '.pem')
+    out = {}
+    if verbose: 
+        print(app + ":")
+
+    # Check certroot and obtain domains
     try:
         certroot = certroot if certroot.endswith("/") else certroot + "/"
         domains = ls(certroot)
     except FileNotFoundError as e:
         print("ERROR: certbot not configured or present:\n\t" + certroot + " not found or empty")
         domains = []
-    out = {}
-    if verbose:
-        print(app + ":")
+
     for domain in domains:
-        priv = certroot + domain + '/privkey.pem'
-        cert = certroot + domain + '/cert.pem'
-        name = certroot + domain + '/' + app + '.pem'
-        command = "".join(['cat', ' ', cert, ' ', priv, ' > ', name])
+        path = pjoin(certroot, domain)
+        certs = {pem:pjoin(path, pem) for pem in ls(path)}
+        if app == "ejabberd":
+            command = ['cat', ' ', certs['privkey'], ' ', certs['fullchain'], ' > ', certname]
+        if app == "lighttpd":
+            command = ['cat', ' ', certs['cert'], ' ', certs['privkey'], ' > ', name]
+        else:
+           print("ERROR: uknown application: " + app)
+           return False 
+        command = "".join(command)
         out[domain] = sh([command], shell=True)
         if out[domain] == b'':
             if verbose:
@@ -74,7 +82,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     for app in args.app:
-        if app in group:
-            written = write_cert(app, certroot=args.certroot, verbose=args.verbose)
-        else:
-            print("ERROR: uknown application: " + app)
+        written = write_cert(app, certroot=args.certroot, verbose=args.verbose)
