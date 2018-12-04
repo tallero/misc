@@ -51,7 +51,7 @@ def write_cert(app):
 
 if __name__ == "__main__":
 
-    parser = ArgumentParser(description="Output Let's Ecrypt certificate compatible with given application")
+    parser = ArgumentParser(description="Write a \"Let's Ecrypt\" certificate compatible with a given application")
     parser.add_argument('--verbose', dest='verbose', action='store_true', default=False, help="extended output")
     parser.add_argument('app', action='store', default='lighttpd', help="application that request the certificate")
     args = parser.parse_args()
