@@ -59,9 +59,9 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         certs = {pem:pjoin(path, pem) for pem in ls(path)}
 
         if app == "ejabberd":
-            command = ['cat', ' ', certs['privkey'], ' ', certs['fullchain'], ' > ', certname]
+            command = ['cat', ' ', certs['privkey.pem'], ' ', certs['fullchain.pem'], ' > ', certname]
         if app == "lighttpd":
-            command = ['cat', ' ', certs['cert'], ' ', certs['privkey'], ' > ', name]
+            command = ['cat', ' ', certs['cert.pem'], ' ', certs['privkey.pem'], ' > ', name]
         else:
            print("ERROR: uknown application: " + app)
            return False 
