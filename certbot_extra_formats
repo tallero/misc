@@ -50,6 +50,7 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         print("ERROR: certbot not configured or present:\n\t" + certroot + " not found or empty")
         domains = []
     for domain in domains:
+        print(domains)
         if verbose:
             print(domain)
         priv = certroot + domain + '/privkey.pem'
