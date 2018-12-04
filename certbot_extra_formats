@@ -29,8 +29,6 @@ from argparse import ArgumentParser
 
 name = 'certbot_extra_formats'
 
-def in_certroot(domain, x): return "".join([certroot, domain, "/", x])
-
 def write_cert(app, certroot="/etc/letsencrypt/live/"):
     """Combine and write let's encrypt certificates compatible with given application.
 
@@ -46,9 +44,9 @@ def write_cert(app, certroot="/etc/letsencrypt/live/"):
         print("certbot not configured or present:\n\t" + certroot + " not found or empty")
         domains = []
     for domain in domains:
-        priv = in_certroot(domain, 'privkey.pem')
-        cert = in_certroot(domain, 'cert.pem')
-        name = in_certroot(domain, app + '.pem')
+        priv = certroot + domain + "/" + 'privkey.pem'
+        cert = certroot + domain + 'cert.pem'
+        name = certroot + domain +  "/" + app + '.pem')
         command = "".join(['cat', ' ', cert, ' ', priv, ' > ', name])
         if sh([command], shell=True):
             return True
