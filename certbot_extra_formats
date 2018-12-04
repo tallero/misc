@@ -66,13 +66,13 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
                             certs['cert.pem'], ' ', certs['privkey.pem'],
                             ' > ', certname]}
 
+        # Create certificate
         if apps.get(app, False):
             command = "".join(apps[app])
             out[domain] = sh([command], shell=True)
         else:
             print("ERROR: uknown application: " + app)
             return False 
-
         if out[domain] == b'':
             if verbose:
                 print("\twriting " + domain)
