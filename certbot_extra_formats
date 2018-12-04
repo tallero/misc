@@ -41,7 +41,6 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         True if the certificate has been written to certroot dir with 'app.pem' name, False otherwise.
 
     """
-    certname = pjoin(certroot, domain, app + '.pem')
     out = {}
     if verbose: 
         print(app + ":")
@@ -56,7 +55,9 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
 
     for domain in domains:
         path = pjoin(certroot, domain)
+        certname = pjoin(path, app + '.pem')
         certs = {pem:pjoin(path, pem) for pem in ls(path)}
+
         if app == "ejabberd":
             command = ['cat', ' ', certs['privkey'], ' ', certs['fullchain'], ' > ', certname]
         if app == "lighttpd":
@@ -64,6 +65,7 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         else:
            print("ERROR: uknown application: " + app)
            return False 
+
         command = "".join(command)
         out[domain] = sh([command], shell=True)
         if out[domain] == b'':
