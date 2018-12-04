@@ -29,27 +29,33 @@ from argparse import ArgumentParser
 
 name = 'certbot_extra_formats'
 
-def write_cert(app, certroot="/etc/letsencrypt/live/"):
+def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
     """Combine and write let's encrypt certificates compatible with given application.
 
     Args:
-        app (str): application that rquests the certificate;
+        app (str): application that requests the certificate;
+        certroot (str): where the letsencrypt certificates are (default: /etc/letsencrypt/live/);
+        verbose (bool): extended output 
     Returns:
         True if the certificate has been written to disk, False otherwise.
 
     """
     try:
+        certroot = certroot if certroot.endswith("/") else certroot + "/"
         domains = ls(certroot)
     except FileNotFoundError as e:
         print("certbot not configured or present:\n\t" + certroot + " not found or empty")
         domains = []
     for domain in domains:
-        print(domain)
+        if verbose:
+            print(domain)
         priv = certroot + domain + '/privkey.pem'
         cert = certroot + domain + '/cert.pem'
         name = certroot + domain + '/' + app + '.pem'
         command = "".join(['cat', ' ', cert, ' ', priv, ' > ', name])
         if sh([command], shell=True):
+            if verbose:
+                print("writing " + args.app + ".pem")
             return True
 
 if __name__ == "__main__":
@@ -57,13 +63,12 @@ if __name__ == "__main__":
     parser = ArgumentParser(description="Write a \"Let's Ecrypt\" certificate compatible with a given application")
     parser.add_argument('--verbose', dest='verbose', action='store_true', default=False, help="extended output")
     parser.add_argument('app', action='store', default='lighttpd', help="application that request the certificate")
+    parser.add_argument('--certroot', dest='certroot', action='store', default="/etc/letsencrypt/live/", help="directory which contains the letsencrypt certificates")
     args = parser.parse_args()
 
     group = ['lighttpd', 'ejabberd']
 
     if args.app in group:
-        written = write_cert(args.app)
-        if written and args.verbose:
-            print("writing " + args.app + ".pem")
+        written = write_cert(args.app, certroot=args.certroot, verbose=args.verbose)
     else:
         print("uknown application: " + args.app)
