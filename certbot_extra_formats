@@ -58,19 +58,25 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         certname = pjoin(path, app + '.pem')
         certs = {pem:pjoin(path, pem) for pem in ls(path)}
 
-        if app == "ejabberd":
-            command = ['cat', ' ', certs['privkey.pem'], ' ', certs['fullchain.pem'], ' > ', certname]
-        if app == "lighttpd":
-            command = ['cat', ' ', certs['cert.pem'], ' ', certs['privkey.pem'], ' > ', name]
-        else:
-           print("ERROR: uknown application: " + app)
-           return False 
+        # Certificate generation depending on application
+        apps = {"ejabberd":['cat', ' ',
+                            certs['privkey.pem'], ' ', certs['fullchain.pem'],
+                            ' > ', certname],
+                "lighttpd":['cat', ' ',
+                            certs['cert.pem'], ' ', certs['privkey.pem'],
+                            ' > ', name]}
 
-        command = "".join(command)
-        out[domain] = sh([command], shell=True)
+        if apps.get(app, False):
+            command = "".join(apps[app])
+            out[domain] = sh([command], shell=True)
+        else:
+            print("ERROR: uknown application: " + app)
+            return False 
+
         if out[domain] == b'':
             if verbose:
                 print("\twriting " + domain)
+
 
     if all(out[k] == b'' for k in out.keys()):
             return True
