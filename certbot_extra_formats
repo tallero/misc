@@ -46,7 +46,7 @@ def write_cert(app, certroot="/etc/letsencrypt/live/"):
     for domain in domains:
         priv = certroot + domain + "/" + 'privkey.pem'
         cert = certroot + domain + 'cert.pem'
-        name = certroot + domain + "/" + app + '.pem')
+        name = certroot + domain + "/" + app + '.pem'
         command = "".join(['cat', ' ', cert, ' ', priv, ' > ', name])
         if sh([command], shell=True):
             return True
