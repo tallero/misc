@@ -29,11 +29,9 @@ from argparse import ArgumentParser
 
 name = 'certbot_extra_formats'
 
-certroot = "/etc/letsencrypt/live/"
-
 def in_certroot(domain, x): return "".join([certroot, domain, "/", x])
 
-def write_cert(app):
+def write_cert(app, certroot="/etc/letsencrypt/live/"):
     """Combine and write let's encrypt certificates compatible with given application.
 
     Args:
