@@ -60,7 +60,7 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         out[domain] = sh([command], shell=True)
         if out[domain] == b'':
             if verbose:
-                print("\t" + domain ": writing " + app + ".pem")
+                print("\t" + domain + ": writing " + app + ".pem")
 
     if all(out[k] == b'' for k in out.keys()):
             return True
