@@ -64,7 +64,7 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
                             ' > ', certname],
                 "lighttpd":['cat', ' ',
                             certs['cert.pem'], ' ', certs['privkey.pem'],
-                            ' > ', name]}
+                            ' > ', certname]}
 
         if apps.get(app, False):
             command = "".join(apps[app])
