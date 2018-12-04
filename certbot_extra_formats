@@ -40,7 +40,7 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         certroot (str): where the letsencrypt certificates are (default: /etc/letsencrypt/live/);
         verbose (bool): extended output 
     Returns:
-        True if the certificate has been written to disk, False otherwise.
+        True if the certificate has been written to certroot dir with 'app.pem' name, False otherwise.
 
     """
     try:
@@ -60,7 +60,7 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         out[domain] = sh([command], shell=True)
         if out[domain] == b'':
             if verbose:
-                print("\twriting " + domain + ".pem")
+                print("\twriting " + domain)
 
     if all(out[k] == b'' for k in out.keys()):
             return True
