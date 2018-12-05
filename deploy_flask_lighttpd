@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+
+import os
+import stat
+import argparse
+
+template_fcgi = '''#!/usr/bin/env python3
+from flup.server.fcgi import WSGIServer
+from %s import app
+
+
+class ScriptNameStripper(object):
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        environ['SCRIPT_NAME'] = ''
+        return self.app(environ, start_response)
+
+
+app = ScriptNameStripper(app)
+
+if __name__ == '__main__':
+    WSGIServer(app).run()
+
+'''
+
+
+# ATTENTION!
+# the line `"^(/.*)$" => "/app.fcgi$1",` makes this app the root on your webserver.
+# it literally says "pass all requests to the app"
+# Consider removing or changing it if you are deploying several web apps on one lighttpd server
+template_config = '''static-file.exclude-extensions += (".py", ".pyc")
+
+$HTTP["host"] =~ "%s" {
+	server.document-root = "%s"
+
+	fastcgi.server = ("/" =>
+		((
+			"socket" => "%s",
+			"bin-path" => "%s",
+			"check-local" => "disable",
+			"max-procs" => 1
+		))
+	)
+
+	alias.url = (
+		"/static" => "%s"
+	)
+
+	url.rewrite-once = (
+		# "^(/static($|/.*))$" => "$1",  # we just don't need it until we have a /static/ request handler.
+		"^(/.*)$" => "/app.fcgi$1",
+	)
+}
+'''
+
+template_app = '''#!/usr/bin/env python3
+from flask import Flask
+app = Flask(__name__)
+
+
+@app.route("/")
+def hello():
+    return "Hello World! It's Flask and Python 3+!"
+'''
+
+
+parser = argparse.ArgumentParser(description='Creates and configures a new Flask project for running lighttpd.')
+
+parser.add_argument('name', dest='name', action='store', required=True,
+                    help='lowercase alphanumeric name of the project')
+
+parser.add_argument('hostname', dest='hostname', action='store', required=True,
+                    help='the hostname on which the project should be available. You can use dot (".") if the hostname is not known yet or you want to test it from different locations but remebmer that it\'s not that secure.')
+
+parser.add_argument('--appname', dest='appname', action='store', default="app",
+                    help='the appname from which the flask app will be imported')
+
+parser.add_argument('--config', dest='config', action='store', default="/etc/lighttpd/lighttpd.conf",
+                    help='path to the lighttpd configuration file')
+
+parser.add_argument('--path', dest='path', action='store', default="/var/apps",
+                    help='path to the apps directory (where to create a new project folder)')
+
+args = parser.parse_args()
+options = vars(args)
+
+# Figure out the docroot
+docroot = "%s/%s" % (options['path'], options['name'])
+
+# The lighttpd configuration file can only include relative paths, so we'll have to figure out how deep we are.
+config_depth = len([x for x in options['config'].split("/") if x != ""]) - 1
+basepath = "../" * config_depth
+
+# Generate included configuration paths
+relative_include = "%s/%s/lighttpd.conf" % (basepath[:-1], docroot[1:])
+absolute_include = "%s/lighttpd.conf" % docroot
+
+# Generate path to socket
+socket_path = "/tmp/%s-fcgi.sock" % options['name']
+
+# Generate path to main .fcgi file
+fcgi_path = "%s/app.fcgi" % docroot
+
+# Generate path to static directory
+static_path = "%s/static" % docroot
+
+# Generate path to templates directory
+templates_path = "%s/templates" % docroot
+
+print("Document root: %s" % docroot)
+print("Relative include path: %s" % relative_include)
+print("Absolute include path: %s" % absolute_include)
+print("Socket path: %s" % socket_path)
+print("FCGI path: %s" % fcgi_path)
+print("Static file path: %s" % static_path)
+print("Folder `templates` path: %s" % templates_path)
+print("Hostname: '%s'" % options['hostname'])
+input("Press enter to continue (if everything is okay)...")
+
+print("---\nCreating document root...")
+# Create document root
+os.makedirs(docroot)
+
+print("Creating static file directory...")
+# Create static files directory
+os.makedirs(static_path)
+# Create templates directory
+os.makedirs(templates_path)
+
+print("Creating main .fcgi file...")
+# Create main .fcgi file
+with open(fcgi_path, "w") as f:
+    f.write(template_fcgi % (options['appname']))
+
+print("Creating configuration include...")
+# Create configuration include
+with open(absolute_include, "w") as f:
+    f.write(template_config % (options['hostname'], docroot, socket_path, fcgi_path, static_path))
+
+print("Creating application template...")
+with open("%s/%s.py" % (docroot, options['appname']), "w") as f:
+    f.write(template_app)
+
+print("Setting main .fcgi file as executable...")
+os.chmod(fcgi_path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH)
+
+print("Appending include path to main lighttpd configuration file...")
+# Append include to the main lighttpd configuration file
+with open(options['config'], "a") as f:
+    f.write("\ninclude \"%s\"\n" % relative_include)
+
+print("""---\nDone!\nDon't forget to add line `include "conf-available/10-fastcgi.conf"` before your config includes in %s
+Run `/etc/init.d/lighttpd restart` to restart your web server
+P.S. You can check if server has successfully started by executing `cat /var/log/lighttpd/error.log`""" % options['config'])

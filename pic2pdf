@@ -26,6 +26,10 @@ from PIL import Image
 from os.path import realpath
 from os import getcwd
 from sys import argv
+from setprocname import setprocname
+
+name = 'pic2pdf'
+setprocname(name)
 
 def pic2pdf(imglist, output):
     """ Create pdf file from pictures
