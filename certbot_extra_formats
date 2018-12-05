@@ -64,7 +64,8 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
                             ' > ', certname],
                 "lighttpd":['cat', ' ',
                             certs['cert.pem'], ' ', certs['privkey.pem'],
-                            ' > ', certname]}
+                            ' > ', certname],
+                 "tomcat":["echo '@schoen tell me how to generate the cert'"}
 
         # Create certificate
         if apps.get(app, False):
