@@ -65,7 +65,19 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
                 "lighttpd":['cat', ' ',
                             certs['cert.pem'], ' ', certs['privkey.pem'],
                             ' > ', certname],
-                 "tomcat":["echo '@schoen tell me how to generate the cert'"}
+                "tomcat7":["echo 'IMPORTANT: the common name has to be your FQDN, for instance : www.myexample.com'", '&&'
+                           'keytool -genkey -alias tomcat -keyalg RSA -keystore /usr/share/tomcat/.keystore -keysize 2048', '&&',
+                           'keytool -certreq -alias tomcat -file request.csr -keystore /usr/share/tomcat/.keystore', '&&',
+                           'systemctl stop tomcat', '&&',
+                           'iptables -F -t nat', '&&',
+                           'certbot certonly --csr request.csr', '&&',
+                           'keytool -import -trustcacerts -alias tomcat -file 0000_chain.pem -keystore /usr/share/tomcat7/.keystore', '&&',
+                           'echo', """modify tomcat server.xml (i.e. /etc/tomcat7/server.xml) to make 8443 port connector to look like:
+<Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
+maxThreads="150" scheme="https" secure="true"
+clientAuth="false" sslProtocol="TLS" KeystoreFile="/usr/share/tomcat7/.keystore" KeystorePass="Password_you_have_set_at_key_creation" />""", '&&',
+                           'systemctl restart tomcat', '&&',
+                           "echo 'restore your firewall'"]}
 
         # Create certificate
         if apps.get(app, False):
