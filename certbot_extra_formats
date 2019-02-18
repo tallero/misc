@@ -27,6 +27,7 @@ from subprocess import check_output as sh
 from os import listdir as ls
 from os.path import join as pjoin
 from argparse import ArgumentParser
+from os import walk
 
 name = 'certbot_extra_formats'
 
@@ -48,7 +49,10 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
     # Check certroot and obtain domains
     try:
         certroot = certroot if certroot.endswith("/") else certroot + "/"
-        domains = ls(certroot)
+        domains = []
+        for (dirpath, dirnames, filenames) in walk(certroot):
+            domains.extend(dirnames)
+            break
     except FileNotFoundError as e:
         print("ERROR: certbot not configured or present:\n\t" + certroot + " not found or empty")
         domains = []
