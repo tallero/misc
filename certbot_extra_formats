@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-#    create_web_cert
+#    certbot_extra_formats
 #
 #    ----------------------------------------------------------------------
 #    Copyright © 2018  Pellegrino Prevete
@@ -9,7 +9,7 @@
 #    ----------------------------------------------------------------------
 #
 #    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
+#    it under the terms of the GNU Affero General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
@@ -18,7 +18,7 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
+#    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
@@ -81,7 +81,10 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
 maxThreads="150" scheme="https" secure="true"
 clientAuth="false" sslProtocol="TLS" KeystoreFile="/usr/share/tomcat7/.keystore" KeystorePass="Password_you_have_set_at_key_creation" />""", '&&',
                            'systemctl restart tomcat', '&&',
-                           "echo 'restore your firewall'"]}
+                           "echo 'restore your firewall'"],
+                "httpd-dh":['cat', ' ',
+                            certs['cert.pem'], ' ', '/etc/pki/tls/certs/dh2048.pem',
+                            ' > ', '/etc/pki/tls/certs/http-' + domain + '.crt']}
 
         # Create certificate
         if apps.get(app, False):
@@ -102,7 +105,7 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(description="Write a \"Let's Ecrypt\" certificate compatible with a given application")
     parser.add_argument('--verbose', dest='verbose', action='store_true', default=False, help="extended output")
-    parser.add_argument('app', nargs='*', action='store', default=['lighttpd'], help="application that request the certificate")
+    parser.add_argument('app', nargs='*', action='store', default=['lighttpd'], help="""application that request the certificate: ejabberd, lighttpd, tomcat7, httpd-dh (apache <= 2.4.7 with DH parameters)""")
     parser.add_argument('--certroot', dest='certroot', action='store', default="/etc/letsencrypt/live/", help="directory which contains the letsencrypt certificates")
     args = parser.parse_args()
 
