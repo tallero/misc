@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+from subprocess import check_output as sh
+
+output = str(sh(['pip', 'list', '--user'])).split("\\n")
+packages = []
+
+for p in output[2:]:
+    if len(p.split()) == 2:
+        package, version = p.split()
+        packages.append({"name":package, "version":version})
+
+for p in packages:
+    print("Upgrade", p["name"], "? [Y/n]")
+    ans = input()
+    if ans.lower() in ("y", "\n"):
+        print(sh(['pip', 'install', '-U', '--user', p['name']]))
