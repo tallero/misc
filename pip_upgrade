@@ -37,4 +37,4 @@ for p in packages:
     print("Upgrade", p["name"], "? [Y/n]")
     ans = input()
     if ans.lower() in ("y", "\n"):
-        print(sh(['pip', 'install', '-U', '--user', p['name']]))
+        print(str(sh(['pip', 'install', '-U', '--user', p['name']])))
