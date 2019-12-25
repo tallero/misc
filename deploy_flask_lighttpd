@@ -68,10 +68,10 @@ def hello():
 
 parser = argparse.ArgumentParser(description='Creates and configures a new Flask project for running lighttpd.')
 
-parser.add_argument('name', dest='name', action='store', required=True,
+parser.add_argument('name', action='store',
                     help='lowercase alphanumeric name of the project')
 
-parser.add_argument('hostname', dest='hostname', action='store', required=True,
+parser.add_argument('hostname', action='store',
                     help='the hostname on which the project should be available. You can use dot (".") if the hostname is not known yet or you want to test it from different locations but remebmer that it\'s not that secure.')
 
 parser.add_argument('--appname', dest='appname', action='store', default="app",
