@@ -24,7 +24,7 @@
 
 from subprocess import getoutput as sh
 from argparse import ArgumentParser
-
+from sys import stderr
 
 def main():
 
@@ -59,8 +59,12 @@ def main():
     if args.verbose:
         print(args)
 
+    if not args.command:
+        parser.print_help(stderr)
+        exit()
+
     command = args.command.format(*args.command_args)
-    print(command)
+    print("Command: {}".format(command))
     print(sh(command))
 
 if __name__ == "__main__":
