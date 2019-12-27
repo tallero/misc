@@ -28,7 +28,7 @@ from argparse import ArgumentParser
 def main():
 
     # Argument parser
-    parser = ArgumentParser(description="KFM control tool")
+    parser = ArgumentParser(description="Python-like replacement syntax for Bash")
 
     # Verbose
     verbose = {'args':['--verbose'],
