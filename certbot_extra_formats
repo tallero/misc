@@ -66,6 +66,9 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         apps = {"ejabberd":['cat', ' ',
                             certs['privkey.pem'], ' ', certs['fullchain.pem'],
                             ' > ', certname],
+                "haproxy":['cat', ' ',
+                            certs['privkey.pem'], ' ', certs['fullchain.pem'],
+                            ' > ', certname],
                 "lighttpd":['cat', ' ',
                             certs['cert.pem'], ' ', certs['privkey.pem'],
                             ' > ', certname],
@@ -105,7 +108,7 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(description="Write a \"Let's Ecrypt\" certificate compatible with a given application")
     parser.add_argument('--verbose', dest='verbose', action='store_true', default=False, help="extended output")
-    parser.add_argument('app', nargs='*', action='store', default=['lighttpd'], help="""application that request the certificate: ejabberd, lighttpd, tomcat7, httpd-dh (apache <= 2.4.7 with DH parameters)""")
+    parser.add_argument('app', nargs='*', action='store', default=['lighttpd'], help="""application that request the certificate: ejabberd, haproxy, lighttpd, tomcat7, httpd-dh (apache <= 2.4.7 with DH parameters)""")
     parser.add_argument('--certroot', dest='certroot', action='store', default="/etc/letsencrypt/live/", help="directory which contains the letsencrypt certificates")
     args = parser.parse_args()
 
