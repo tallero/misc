@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ssh -Y -t phablet 'GDK_SCALE=3 GTK_DEBUG=touchscreen nautilus'

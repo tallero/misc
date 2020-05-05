@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+#    remote_streaming
+#
+#    ----------------------------------------------------------------------
+#    Copyright © 2019, 2020  Pellegrino Prevete
+#
+#    All rights reserved
+#    ----------------------------------------------------------------------
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+from argparse import ArgumentParser
+from subprocess import call
+from time import sleep
+
+def main(host):
+    while True:
+        sync_command = ["rsync",
+                        "".join([host, ":~/Music/recording.wav"]),
+                        "~/recording.wav"]
+        call(sync_command)
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description="Server side recording-fetch for GNU/Linux device; it uses rsync.")
+
+    host = {'args': ['host'],
+            'kwargs': {'nargs': 1,
+                       'action': 'store',
+                       'help': "host from which one has to fetch the recording (ssh format)"}}
+
+    parser.add_argument(*host['args'], **host['kwargs'])
+
+    args = parser.parse_args()
+
+    main(args.host[0])

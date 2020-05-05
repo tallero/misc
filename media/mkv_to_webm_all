@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+#    mkv_to_webm_all
+#
+#    ----------------------------------------------------------------------
+#    Copyright © 2020  Pellegrino Prevete
+#
+#    All rights reserved
+#    ----------------------------------------------------------------------
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+
+from os import walk
+from os.path import join as path_join
+from subprocess import call
+
+get_extension = lambda x: x.split(".")[-1]
+
+remove_extension = lambda x: ".".join(x.split(".")[:-1])
+
+change_extension = lambda x, ext: ".".join([remove_extension(x), ext])
+
+
+def main(directory):
+    for dirpath, dirnames, filenames in walk(directory):
+        for f in filenames:
+            if get_extension(f) == "mkv":
+    
+                input_file = path_join(dirpath, f)
+                output_file = path_join(dirpath, change_extension(f, "webm"))
+    
+                convert_command = ["ffmpeg", "-i", input_file, output_file]
+    
+                print("Converting {}".format(input_file))
+                call(convert_command)
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description="Recursively convert in webm all mkvs in a given directory")
+
+    directory = {'args': ['directory'],
+                 'kwargs': {'nargs': 1,
+                            'action': 'store',
+                            'help': "directory"}}
+
+    parser.add_argument(*directory['args'], **directory['kwargs'])
+
+    args = parser.parse_args()
+
+    main(args.directory[0])
+
+

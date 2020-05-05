@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+# HD
+xrandr --addmode DisplayPort-0 1920x1080
+xrandr --output DisplayPort-0 --mode 1920x1080 --left-of HDMI-0
+
+# SD
+#xrandr --addmode DisplayPort-0 1024x768
+#xrandr --output DisplayPort-0 --mode 1024x768 --left-of HDMI-0
