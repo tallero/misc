@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+#    reverse_logarithmic_presser
+#
+#    ----------------------------------------------------------------------
+#    Copyright © 2020  Pellegrino Prevete
+#
+#    All rights reserved
+#    ----------------------------------------------------------------------
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+from argparse import ArgumentParser
+from numpy import log
+import subprocess
+from time import sleep
+
+def main(key="Down", 
+         countdown=10, 
+         steps=20000, 
+         length=2400, 
+         scale=400, 
+         threshold=1):
+    
+    times = []
+
+    # Find discretization points
+    for i in range(1,steps+1):
+        x = i/steps
+        y = length - length * log(scale - (scale - 1) * x) / log(scale)
+        times.append(y)
+
+    # Apply threshold
+    new_times = []
+    counter = 0
+    for t in times:
+        if t - counter >= threshold:
+            new_times.append(t)
+            counter = t
+
+    times = new_times
+    new_times = []
+
+    # Evaluate diff
+    for i,t in enumerate(times):
+       new_times.append(times[i] - times[i-1])
+
+    times = new_times[1:]
+    times.reverse()
+
+    # Start countdown
+    for i in range(countdown):
+        print("starting in {}".format(countdown))
+        sleep(1)
+        countdown -= 1
+
+    # Executing routine
+    for t in times:
+        print("sleepin {}".format(t))
+        sleep(t)
+        print("Pressing key")
+        subprocess.call(["xdotool", "key", key])
+
+if __name__ == "__main__":
+    parser = ArgumentParser(description="Reversed logarithmic presser.")
+
+    key = {'args': ['key'],
+           'kwargs': {'nargs': 1,
+                      'action': 'store',
+                      'default': ["Down"],
+                      'help': "Key to press."}}
+
+    countdown = {'args': ['--countdown'],
+                 'kwargs': {'dest': 'countdown',
+                            'nargs': 1,
+                            'action': 'store',
+                            'default': [10],
+                            'help': "how many seconds to wait before starting; default: 10."}}
+
+    steps = {'args': ['--steps'],
+             'kwargs': {'dest': 'steps',
+                        'nargs': 1,
+                        'action': 'store',
+                        'default': [20000],
+                        'help': "steps in the discretization; default: 20000."}}
+
+    length = {'args': ['--length'],
+              'kwargs': {'dest': 'length',
+                         'nargs': 1,
+                         'action': 'store',
+                         'default': [2400],
+                         'help': "total seconds on which the logarithmic press has to be applied; default: 2400."}}
+
+    scale = {'args': ['--scale'],
+             'kwargs': {'dest': 'scale',
+                        'nargs': 1,
+                        'action': 'store',
+                        'default': [400],
+                        'help': "log basis; default: 400."}}
+
+    threshold = {'args': ['--threshold'],
+                 'kwargs': {'dest': 'threshold',
+                            'nargs': 1,
+                            'action': 'store',
+                            'default': [1],
+                            'help': "min time between two consecutive presses; default: 1."}}
+
+    parser.add_argument(*key['args'], **key['kwargs'])
+    parser.add_argument(*countdown['args'], **countdown['kwargs'])
+    parser.add_argument(*steps['args'], **steps['kwargs'])
+    parser.add_argument(*length['args'], **length['kwargs'])
+    parser.add_argument(*scale['args'], **scale['kwargs'])
+    parser.add_argument(*threshold['args'], **threshold['kwargs'])
+
+    args = parser.parse_args()
+
+    main(args.key[0], 
+         int(args.countdown[0]), 
+         int(args.steps[0]),
+         int(args.length[0]),
+         int(args.scale[0]),
+         int(args.threshold[0]))
+
