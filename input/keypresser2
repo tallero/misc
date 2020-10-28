@@ -1,0 +1,11 @@
+#!/bin/bash
+
+while true; do
+  xdotool key N
+  sleep 0.1
+  xdotool key O
+  sleep 0.1
+  xdotool key P
+  sleep 0.5
+  xdotool key E
+done
