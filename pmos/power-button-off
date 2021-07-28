@@ -1,4 +1,5 @@
 #!/usr/bin/bash
 
 echo 0 > /sys/class/backlight/lcd-backlight/brightness && \
-echo mem > /sys/class/backlight/lcd-backlight/brightness
+echo mem > /sys/power/state && \
+echo 250 > /sys/class/backlight/lcd-backlight/brightness
