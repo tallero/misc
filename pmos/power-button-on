@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+echo 250 > /sys/class/backlight/lcd-backlight/brightness
