@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+sleep 3 && \
+xdotool key "j" && \
+sleep 1 && \
+xdotool key "j" && \
+sleep 1 && \
+xdotool key "f" && \
+sleep 1 && \
+xdotool key "k" && \
+sleep 2 && \
+#xdotool key "f" && \
+#sleep 2 && \
+#xdotool key "a" && \
+sleep 1 && \
+xdotool key "ctrl+shift+l"
