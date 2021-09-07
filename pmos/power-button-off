@@ -1,6 +1,10 @@
 #!/usr/bin/bash
 
-sudo echo "suspending to mem"
+# Disable touchscreen
+
+echo "usage finished"
+INPUT_DEVICE=8 # got with xinput
+xinput disable $INPUT_DEVICE
+
+# Raise brightness
 brightnessctl s 0
-sudo pm-suspend
-brightnessctl s 255

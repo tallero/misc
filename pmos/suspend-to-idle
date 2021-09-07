@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+sudo echo "suspending to mem"
+brightnessctl s 0
+sudo pm-suspend
+brightnessctl s 255

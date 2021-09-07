@@ -1,3 +1,10 @@
 #!/usr/bin/bash
 
-echo 250 > /sys/class/backlight/lcd-backlight/brightness
+# Re-enable touchscreen
+
+echo "usage started"
+INPUT_DEVICE=8 # got with xinput
+xinput enable $INPUT_DEVICE
+
+# Raise brightness
+brightnessctl s 250
