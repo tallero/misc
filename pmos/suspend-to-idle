@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/sh
 
 sudo echo "suspending to mem"
 brightnessctl s 0
