@@ -1,0 +1,64 @@
+#!/usr/bin/env ipython3
+"""To which package belong this file?"""
+
+from subprocess import getoutput  # as sh
+
+NEWLINE = "\n"
+
+
+def parse_output(output, verbose=False):
+    """Get output and separe at least lines"""
+    if verbose:
+        print(output)
+    return output.split(NEWLINE)
+
+
+def bash(whatever):
+    """Get bare minimum ouput for processing"""
+    output = getoutput(whatever)
+    return parse_output(output)
+
+
+def get_packages():
+    """Get packages list"""
+    packages = []
+    output = bash("pacman -Q")
+    for line in output:
+        package = (package_name, version) = line.split(" ")
+        packages.append(package)
+    return packages
+
+
+def get_files(package):
+    """Get files for a package)"""
+    files = []
+    output = bash(f"pacman -Ql {package}")
+    for line in output:
+        package_name, path = line.split(" ")
+        files.append(path)
+    return files
+
+
+def search(query, package):
+    """What's in the package like this?"""
+    print(package)
+    results = []
+    package_name, version = package
+    files = get_files(package_name)
+
+    for file in files:
+        if query in file:
+            results.append(file)
+    return results
+
+
+def find_owner(file):
+    packages = get_packages()
+    for package in packages:
+        results = search(file, package)
+        print(results)
+        break
+
+
+if __name__ == "__main__":
+    find_owner("")
