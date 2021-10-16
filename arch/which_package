@@ -1,6 +1,7 @@
 #!/usr/bin/env ipython3
 """To which package belong this file?"""
 
+from argparse import ArgumentParser
 from subprocess import getoutput  # as sh
 
 NEWLINE = "\n"
@@ -34,17 +35,24 @@ def get_files(package):
     files = []
     output = bash(f"pacman -Ql {package}")
     for line in output:
-        package_name, path = line.split(" ")
-        files.append(path)
+        try:
+            package_name, path = line.split(" ")
+            files.append(path)
+
+        except Exception:
+            pass
+            # Measure malformed lines
+            # print(package)
+            # print(line)
     return files
 
 
 def search(query, package):
     """What's in the package like this?"""
-    print(package)
     results = []
     package_name, version = package
     files = get_files(package_name)
+    del version
 
     for file in files:
         if query in file:
@@ -52,13 +60,21 @@ def search(query, package):
     return results
 
 
-def find_owner(file):
+def find_owners(file):
+    """Find packages who own a given file"""
+    owners = []
     packages = get_packages()
-    for package in packages:
+    total_pkgs = len(packages)
+    for i, package in enumerate(packages):
+        package_name, version = package
+        print(f"[{i}/{total_pkgs}] {package_name}", end="\r")
         results = search(file, package)
-        print(results)
-        break
+        if results:
+            owners.append(package)
+    return owners
 
 
 if __name__ == "__main__":
-    find_owner("")
+    owners = find_owners("/usr/bin/tilix")
+    print("\n")
+    print(owners)
