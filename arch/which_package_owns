@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+"""To which package belong this file?"""
+
+
+
+from argparse import ArgumentParser
+from subprocess import getoutput  # as sh
+from os import sys
+
+NEWLINE = "\n"
+CLEAR = "\033[K"
+
+
+def parse_output(output, verbose=False):
+    """Get output and split lines"""
+    if verbose:
+        print(output)
+    return output.split(NEWLINE)
+
+
+def bash(whatever):
+    """Get bare minimum ouput for processing"""
+    output = getoutput(whatever)
+    return parse_output(output)
+
+
+def get_packages():
+    """Get packages list"""
+    packages = []
+    output = bash("pacman -Q")
+    for line in output:
+        package = (package_name, version) = line.split(" ")
+        packages.append(package)
+    return packages
+
+
+def get_files(package):
+    """Get files for a package)"""
+    files = []
+    output = bash(f"pacman -Ql {package}")
+    for line in output:
+        try:
+            package_name, path = line.split(" ")
+            files.append(path)
+
+        except Exception:
+            pass
+            # Measure malformed lines
+            # print(package)
+            # print(line)
+    return files
+
+
+def search(query, package):
+    """What's in the package like this?"""
+    results = []
+    package_name, version = package
+    files = get_files(package_name)
+    del version
+
+    for file in files:
+        if query in file:
+            results.append(file)
+    return results
+
+
+def find_owners(file):
+    """Find packages who own a given file"""
+    owners = []
+    packages = get_packages()
+    total_pkgs = len(packages)
+    for current, package in enumerate(packages):
+        package_name, version = package
+        print(f"[{current}/{total_pkgs}] {package_name}", end="\r")
+        sys.stdout.write(CLEAR)
+        results = search(file, package)
+        if results:
+            owners.append(package)
+    return owners
+
+
+def main():
+    """Main entry point
+
+    This thing is pretty useless since `pacman -Qo path`
+
+    """
+
+    parser = ArgumentParser()
+    arguments = [
+      [("file_query", ),
+       {"type": str,
+        "help": 'absolute path of input file'}],
+    ]
+
+    for argument in arguments:
+        args, kwargs = argument
+        parser.add_argument(*args, **kwargs)
+
+    args = parser.parse_args()
+
+    owners = find_owners(args.file_query)
+
+    print(NEWLINE)
+
+    for owner in owners:
+        print(owner)
+
+    return owners
+
+
+if __name__ == "__main__":
+
+    main()
