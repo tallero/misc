@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 _ls_by_size() {
-  local _files=($@) \
+  local _files=("${@}") \
         _awk_cmd=() \
         _blue='\033[1;94m' \
         _off='\033[0m'
@@ -19,7 +19,7 @@ _ls_by_size() {
           "${_awk_cmd[*]}"
 }
 
-_files=($@)
+_files=("${@}")
 _ls_by_size "${_files[@]}"
 
 # vim:set sw=2 sts=-1 et:
