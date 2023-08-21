@@ -17,7 +17,7 @@ install: install-ux
 
 install-ux:
 
-        install -vDm 755 ux/ls_by_date "$(BIN_DIR)/ls_by_date"
-        install -vDm 755 ux/ls_by_size "$(BIN_DIR)/ls_by_size"
+	install -vDm 755 ux/ls_by_date "$(BIN_DIR)/ls_by_date"
+	install -vDm 755 ux/ls_by_size "$(BIN_DIR)/ls_by_size"
 
 .PHONY: check install install-ux shellcheck
