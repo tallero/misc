@@ -3,7 +3,7 @@
 #    certbot_extra_formats
 #
 #    ----------------------------------------------------------------------
-#    Copyright © 2018  Pellegrino Prevete
+#    Copyright © 2018, 2019, 2020, 2021, 2022, 2023  Pellegrino Prevete
 #
 #    All rights reserved
 #    ----------------------------------------------------------------------
@@ -106,11 +106,32 @@ clientAuth="false" sslProtocol="TLS" KeystoreFile="/usr/share/tomcat7/.keystore"
 
 if __name__ == "__main__":
 
-    parser = ArgumentParser(description="Write a \"Let's Ecrypt\" certificate compatible with a given application")
-    parser.add_argument('--verbose', dest='verbose', action='store_true', default=False, help="extended output")
-    parser.add_argument('app', nargs='*', action='store', default=['lighttpd'], help="""application that request the certificate: ejabberd, haproxy, lighttpd, tomcat7, httpd-dh (apache <= 2.4.7 with DH parameters)""")
-    parser.add_argument('--certroot', dest='certroot', action='store', default="/etc/letsencrypt/live/", help="directory which contains the letsencrypt certificates")
+    parser = ArgumentParser(
+               description="Write a \"Let's Ecrypt\" certificate compatible with a given application")
+    parser.add_argument(
+      '--verbose', 
+      dest='verbose',
+      action='store_true',
+      default=False,
+      help="extended output")
+    parser.add_argument(
+      'app',
+      nargs='*',
+      action='store',
+      default=['lighttpd'],
+      help="""application that request the certificate: ejabberd, haproxy, lighttpd, tomcat7, httpd-dh (apache <= 2.4.7 with DH parameters)""")
+    parser.add_argument(
+      '--certroot',
+      dest='certroot',
+      action='store',
+      default="/etc/letsencrypt/live/",
+      help="directory which contains the letsencrypt certificates")
     args = parser.parse_args()
 
     for app in args.app:
-        written = write_cert(app, certroot=args.certroot, verbose=args.verbose)
+        written = write_cert(
+                    app,
+                    certroot=args.certroot,
+                    verbose=args.verbose)
+
+# vim:set sw=2 sts=-1 et:
