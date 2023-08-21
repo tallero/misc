@@ -8,7 +8,7 @@ UX_FILES=$(wildcard ux/*)
 
 all:
 
-check: shellcheck
+check: shellcheck 
 
 shellcheck:
 	shellcheck -s bash $(UX_FILES)
