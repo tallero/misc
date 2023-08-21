@@ -13,11 +13,15 @@ check: shellcheck
 shellcheck:
 	shellcheck -s bash $(UX_FILES)
 
-install: install-ux
+install: install-certbot-extra-formats install-ux
 
 install-ux:
 
 	install -vDm 755 ux/ls_by_date "$(BIN_DIR)/ls_by_date"
 	install -vDm 755 ux/ls_by_size "$(BIN_DIR)/ls_by_size"
 
-.PHONY: check install install-ux shellcheck
+install-certbot-extra-formats:
+
+	install -vDm 755 certbot_extra_formats "$(BIN_DIR)/certbot_extra_formats"
+
+.PHONY: check install install-certbot-extra-formats install-ux shellcheck

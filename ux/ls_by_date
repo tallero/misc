@@ -5,8 +5,8 @@ _ls_by_date() {
   # shellcheck disable=SC2012
   CLICOLORFORCE=1 \
     ls -lsht \
-       --color | \
-      less
+       --color "${_path}" | \
+      less -r
 }
 
 _path="${1}"

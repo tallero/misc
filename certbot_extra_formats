@@ -31,15 +31,20 @@ from os import walk
 
 name = 'certbot_extra_formats'
 
-def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
-    """Combine and write let's encrypt certificates compatible with given application.
+def write_cert(app, 
+               certroot="/etc/letsencrypt/live/",
+               verbose=False):
+    """Combine and write let's encrypt certificates
+       compatible with given application.
 
     Args:
         app (str): application that requests the certificate;
-        certroot (str): where the letsencrypt certificates are (default: /etc/letsencrypt/live/);
+        certroot (str): where the Let's Encrypt certificates 
+                        are (default: /etc/letsencrypt/live/);
         verbose (bool): extended output 
     Returns:
-        True if the certificate has been written to certroot dir with 'app.pem' name, False otherwise.
+        True if the certificate has been written to certroot
+        dir with 'app.pem' name, False otherwise.
 
     """
     out = {}
@@ -54,7 +59,10 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
             domains.extend(dirnames)
             break
     except FileNotFoundError as e:
-        print("ERROR: certbot not configured or present:\n\t" + certroot + " not found or empty")
+        print(" ".join("ERROR: certbot not configured or",
+                       "present:\n\t",
+                       certroot,
+                       "not found or empty"))
         domains = []
 
     for domain in domains:
@@ -63,31 +71,36 @@ def write_cert(app, certroot="/etc/letsencrypt/live/", verbose=False):
         certs = {pem:pjoin(path, pem) for pem in ls(path)}
 
         # Certificate generation depending on application
-        apps = {"ejabberd":['cat', ' ',
-                            certs['privkey.pem'], ' ', certs['fullchain.pem'],
-                            ' > ', certname],
-                "haproxy":['cat', ' ',
-                            certs['privkey.pem'], ' ', certs['fullchain.pem'],
-                            ' > ', certname],
-                "lighttpd":['cat', ' ',
-                            certs['cert.pem'], ' ', certs['privkey.pem'],
-                            ' > ', certname],
-                "tomcat7":["echo 'IMPORTANT: the common name has to be your FQDN, for instance : www.myexample.com'", '&&'
-                           'keytool -genkey -alias tomcat -keyalg RSA -keystore /usr/share/tomcat/.keystore -keysize 2048', '&&',
-                           'keytool -certreq -alias tomcat -file request.csr -keystore /usr/share/tomcat/.keystore', '&&',
-                           'systemctl stop tomcat', '&&',
-                           'iptables -F -t nat', '&&',
-                           'certbot certonly --csr request.csr', '&&',
-                           'keytool -import -trustcacerts -alias tomcat -file 0000_chain.pem -keystore /usr/share/tomcat7/.keystore', '&&',
-                           'echo', """modify tomcat server.xml (i.e. /etc/tomcat7/server.xml) to make 8443 port connector to look like:
+        apps = {"ejabberd":[
+                  'cat', ' ', certs['privkey.pem'],
+                         ' ', certs['fullchain.pem'], ' > ',
+                    certname],
+                "haproxy":[
+                  'cat', ' ', certs['privkey.pem'],
+                         ' ', certs['fullchain.pem'], ' > ',
+                    certname],
+                "lighttpd":[
+                   'cat', ' ', certs['cert.pem'],
+                          ' ', certs['privkey.pem'], ' > ',
+                     certname],
+                "tomcat7":[
+                  "echo 'IMPORTANT: the common name has to be your FQDN, for instance : www.myexample.com'", '&&'
+                  'keytool -genkey -alias tomcat -keyalg RSA -keystore /usr/share/tomcat/.keystore -keysize 2048', '&&',
+                  'keytool -certreq -alias tomcat -file request.csr -keystore /usr/share/tomcat/.keystore', '&&',
+                  'systemctl stop tomcat', '&&',
+                  'iptables -F -t nat', '&&',
+                  'certbot certonly --csr request.csr', '&&',
+                  'keytool -import -trustcacerts -alias tomcat -file 0000_chain.pem -keystore /usr/share/tomcat7/.keystore', '&&',
+                  'echo', """modify tomcat server.xml (i.e. /etc/tomcat7/server.xml) to make 8443 port connector to look like:
 <Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
 maxThreads="150" scheme="https" secure="true"
 clientAuth="false" sslProtocol="TLS" KeystoreFile="/usr/share/tomcat7/.keystore" KeystorePass="Password_you_have_set_at_key_creation" />""", '&&',
-                           'systemctl restart tomcat', '&&',
-                           "echo 'restore your firewall'"],
-                "httpd-dh":['cat', ' ',
-                            certs['cert.pem'], ' ', '/etc/pki/tls/certs/dh2048.pem',
-                            ' > ', '/etc/pki/tls/certs/http-' + domain + '.crt']}
+                  'systemctl restart tomcat', '&&',
+                  "echo 'restore your firewall'"],
+                "httpd-dh":[
+                  'cat', ' ', certs['cert.pem'],
+                         ' ', '/etc/pki/tls/certs/dh2048.pem', ' > ',
+                              '/etc/pki/tls/certs/http-' + domain + '.crt']}
 
         # Create certificate
         if apps.get(app, False):
@@ -107,7 +120,8 @@ clientAuth="false" sslProtocol="TLS" KeystoreFile="/usr/share/tomcat7/.keystore"
 if __name__ == "__main__":
 
     parser = ArgumentParser(
-               description="Write a \"Let's Ecrypt\" certificate compatible with a given application")
+               description=("Write a \"Let's Ecrypt\" certificate "
+                            "compatible with a given application")
     parser.add_argument(
       '--verbose', 
       dest='verbose',
@@ -119,7 +133,9 @@ if __name__ == "__main__":
       nargs='*',
       action='store',
       default=['lighttpd'],
-      help="""application that request the certificate: ejabberd, haproxy, lighttpd, tomcat7, httpd-dh (apache <= 2.4.7 with DH parameters)""")
+      help=("application that request the certificate: "
+            "ejabberd, haproxy, lighttpd, tomcat7, "
+            "httpd-dh (apache <= 2.4.7 with DH parameters)"))
     parser.add_argument(
       '--certroot',
       dest='certroot',
