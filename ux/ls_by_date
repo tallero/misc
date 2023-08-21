@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+_ls_by_date() {
+  local _path="${1}"
+  CLICOLORFORCE=1 \
+    ls -lsht \
+       --color | \
+      less
+}
+
+_path="${1}"
+_ls_by_date "${_path}"

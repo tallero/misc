@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+_ls_by_size() {
+  local _files=($@) \
+        _awk_cmd=() \
+        _blue='\033[1;94m' \
+        _off='\033[0m'
+  _awk_cmd=('{ print $1,'
+                     '"'"${_blue}"'"'
+                       '$2'
+                     '"'"${_off}"'" };')
+  du -hs "${_files[@]}" 2>/dev/null | \
+    sort -n \
+         -r | \
+      awk -v FS='\t' \
+          -v OFS='\t' \
+          "${_awk_cmd[*]}"
+}
+
+_files=($@)
+_ls_by_size "${_files[@]}"
+
+# vim:set sw=2 sts=-1 et:
