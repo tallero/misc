@@ -2,6 +2,7 @@
 
 _ls_by_date() {
   local _path="${1}"
+  # shellcheck disable=SC2012
   CLICOLORFORCE=1 \
     ls -lsht \
        --color | \

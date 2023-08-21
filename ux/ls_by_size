@@ -7,6 +7,7 @@ _ls_by_size() {
         _awk_cmd=() \
         _blue='\033[1;94m' \
         _off='\033[0m'
+  # shellcheck disable=2016
   _awk_cmd=('{ print $1,'
                      '"'"${_blue}"'"'
                        '$2'
