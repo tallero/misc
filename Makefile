@@ -3,6 +3,7 @@
 
 PREFIX ?= /usr/local
 BIN_DIR=$(DESTDIR)$(PREFIX)/bin
+DATA_DIR=$(DESTDIR)$(PREFIX)/share
 
 UX_FILES=$(wildcard ux/*)
 
@@ -13,15 +14,15 @@ check: shellcheck
 shellcheck:
 	shellcheck -s bash $(UX_FILES)
 
-install: install-certbot-extra-formats install-ux
+install: install-ux install-x205ta
 
 install-ux:
 
 	install -vDm 755 ux/ls_by_date "$(BIN_DIR)/ls_by_date"
 	install -vDm 755 ux/ls_by_size "$(BIN_DIR)/ls_by_size"
 
-install-certbot-extra-formats:
+install-x205ta:
 
-	install -vDm 755 certbot_extra_formats "$(BIN_DIR)/certbot_extra_formats"
+	install -vDm 755 x205ta/us "$(DATA_DIR)/X11/xkb/symbols/us"
 
-.PHONY: check install install-certbot-extra-formats install-ux shellcheck
+.PHONY: check install install-ux install-x205ta shellcheck
